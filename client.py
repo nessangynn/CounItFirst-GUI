@@ -101,7 +101,7 @@ class Client(object):
 
         return self.updated_number
     def receive_message(self, string):
-        self.updated_message = str(string)
+        self.updated_message = string
         return self.updated_message
 #Game loop
     def game_logic(self, input_number):

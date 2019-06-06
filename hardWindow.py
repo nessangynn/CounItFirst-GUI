@@ -44,7 +44,7 @@ class Ui_hardWindow(object):
         self.currNumber.repaint()
     
     def print_result(self):
-        self.turnLabel.setText(str(self.HARD_PLAYER.updated_message))
+        self.turnLabel.setText(self.HARD_PLAYER.updated_message)
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")

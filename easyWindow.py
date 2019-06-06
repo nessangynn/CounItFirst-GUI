@@ -46,7 +46,7 @@ class Ui_easyWindow(object):
         self.currNumber.repaint()
     
     def print_result(self):
-        self.turnLabel.setText(str(self.EASY_PLAYER.updated_message))
+        self.turnLabel.setText(self.EASY_PLAYER.updated_message)
 
 
     def setupUi(self, MainWindow):
