@@ -1,56 +1,60 @@
-# -*- coding: utf-8 -*-
+
 
 '''
-    Count-It-First - Server
+    Count-It-First - Client GUI
     CSC/CPE 4750
     Author: Tai Doan, Hung Nguyen, Huyen Nguyen
 '''
 
-from socket import *
-import re
 import sys
-import random,time
-from time import gmtime, strftime
-from datetime import datetime
 
 # --GUI import library--
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (QScrollBar,QSplitter,QTableWidgetItem,QTableWidget,QComboBox,QVBoxLayout,QGridLayout,QDialog,QWidget, QPushButton, QApplication, QMainWindow,QAction,QMessageBox,QLabel,QTextEdit,QProgressBar,QLineEdit)
+from PyQt5.QtWidgets import (QScrollBar, QSplitter,                            
+                    QTableWidgetItem, QTableWidget, QComboBox, QVBoxLayout,
+                    QGridLayout, QDialog, QWidget, QPushButton, QApplication, 
+                    QMainWindow, QAction, QMessageBox, QLabel, QTextEdit, 
+                    QProgressBar, QLineEdit)
 from PyQt5.QtCore import QCoreApplication
 
 #Connection between Home Page and Game Page
-from easyGame import Ui_easyWindow #EASY MODE
-from hardGame import Ui_hardWindow #HARD MODE
+#testing
+from easyWindow import Ui_easyWindow #EASY MODE
+
+from hardWindow import Ui_hardWindow #HARD MODE
 
 
-
-from client import client
+#Connection between client.py with GUI - home.py
+from client import Client
 
 
 class Ui_MainWindow(object):
 
     def __init__(self):
-        self.NEW_PLAYER = client()
+        self.EASY_PLAYER = Client()
+        self.HARD_PLAYER = Client()
 
-    def openEasyGame(self, NEW_PLAYER):
+    def openEasyGame(self):
 
-        self.NEW_PLAYER.prep_game()
+        self.EASY_PLAYER.prep_game("1")
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_easyWindow(self.NEW_PLAYER) #connect with easyGame.py
+        self.ui = Ui_easyWindow(self.EASY_PLAYER) #connect with easyGame.py
         self.ui.setupUi(self.window)
         MainWindow.hide()
         self.window.show()
         
     def openHardGame(self):
+
+        self.HARD_PLAYER.prep_game("2")
         self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_hardWindow(self.NEW_PLAYER) #connect with hardGame.py
+        self.ui = Ui_hardWindow(self.HARD_PLAYER) #connect with hardGame.py
         self.ui.setupUi(self.window)
         MainWindow.hide()
         self.window.show()
 
     def close_application(self):
         sys.exit()
-        
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(416, 327)
@@ -86,6 +90,7 @@ class Ui_MainWindow(object):
 "text-align: center;\n"
 "color: #e7e7e7;")
         self.easyButton.setObjectName("easyButton")
+
         #Connection between Home Page and Easy Game Mode
         self.easyButton.clicked.connect(self.openEasyGame)
         #self.easyButton.released.connect(self.openEasyGame)
@@ -100,6 +105,7 @@ class Ui_MainWindow(object):
 "text-align: center;\n"
 "color: #e7e7e7;")
         self.hardButton.setObjectName("hardButton")
+
         #Connection between Home Page and Hard Game Mode
         self.hardButton.clicked.connect(self.openHardGame)
         #self.hardButton.released.connect(self.openHardGame)
@@ -125,6 +131,8 @@ class Ui_MainWindow(object):
 "text-align: center;\n"
 "color: #e7e7e7;")
         self.gameModeLabel.setObjectName("gameModeLabel")
+
+        #GUI FRAME
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 416, 22))
@@ -139,20 +147,20 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "HOME"))
         self.gameLabel.setText(_translate("MainWindow", "Welcome to Count-It-First"))
         self.easyButton.setText(_translate("MainWindow", "EASY"))
         self.hardButton.setText(_translate("MainWindow", "HARD"))
         self.quitButton.setText(_translate("MainWindow", "QUIT"))
         self.gameModeLabel.setText(_translate("MainWindow", "Choose your game mode:"))
 
-
+#START THE GAME
 def start():
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    return ui.NEW_PLAYER
+    return ui.EASY_PLAYER
 
 
 
@@ -162,7 +170,5 @@ if __name__ == "__main__":
     MainWindow2 = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    # ui.initGame()
-    # print("check")
     MainWindow.show()
     sys.exit(app.exec_())

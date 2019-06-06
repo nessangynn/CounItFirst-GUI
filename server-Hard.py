@@ -11,7 +11,7 @@ import random
 from time import gmtime, strftime
 from datetime import datetime
 
-hardSocket = socket(socket.AF_INET, socket.SOCK_STREAM) #TCP
+hardSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #TCP
 hardSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #make port reusable
 
 # checks whether sufficient arguments have been provided
@@ -59,30 +59,29 @@ while 1:
         welcomeMessage = "Player " + str(len(clients_hard)-1) +" connected to server HARD"
         print(welcomeMessage)
     
-    ranNum = random.randint(30,50)
+    ranNum = random.randint(30, 50)
     print("Generated number: ",ranNum)
     sum=0
-    genNumMessage = b'Generated number: ' + str(ranNum).encode('utf-8')
+    gen_num = str(ranNum).encode('utf-8')
     for c in clients_hard:
-        c[0].send(genNumMessage)
-    #Prompt the first client to start the chat
-    clients_hard[0][0].send(b'\nSTART! ')
-    #the loop makes the chat last infinitely
+        c[0].send(gen_num)
+
+    #the loop makes the game last infinitely
     while 1:
-        for i in range(0,len(clients_hard)):
+        for i in range(0, len(clients_hard)):
             #receive message from client
             sentence = clients_hard[i][0].recv(2048).decode('utf-8')
             print("Player ", i, " entered: ", sentence)
             sum+= int(sentence)
-            print("Current Number: ", sum)
+            print("Current Number: ", str(sum))
             if sum == ranNum or sum > ranNum:
-                print("THE WINNER IS PLAYER ",i)
+                print("THE WINNER IS PLAYER ", i)
                 clients_hard[i][0].send(b'YOU WIN')
-                broadcast(b'YOU LOSE',clients_hard[i][0],clients_hard)
+                broadcast(b'YOU LOSE',clients_hard[i][0], clients_hard)
                 for c in clients_hard:
                     c[0].close()
                     exit()
             else:
-                curNumberMsg = b'Current Number: ' + str(sum).encode('utf-8')
+                cur_num = str(sum).encode('utf-8')
                 for c in clients_hard:
-                    c[0].send(curNumberMsg)
+                    c[0].send(cur_num)

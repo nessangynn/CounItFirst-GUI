@@ -63,58 +63,31 @@ while 1:
         welcomeMessage = "Player " + str(len(clients)-1) +" connected to server EASY"
         print(welcomeMessage)
     
-    ranNum = random.randint(10,30)
-    print("Generated number: ",ranNum)
-    sum=0
-    genNumMessage = b'Generated number: ' + str(ranNum).encode('utf-8')
+    ran_num = random.randint(10, 30)
+    print("Generated number: ", ran_num)
+    sum = 0
+    gen_num = str(ran_num).encode('utf-8')
     for c in clients:
-        c[0].send(genNumMessage)
-    #Prompt the first client to start the chat
-    clients[0][0].send(b'\nSTART! ')
-    #the loop makes the chat last infinitely
+        c[0].send(gen_num)
+ 
     while 1:
-        for i in range(0,len(clients)):
+        for i in range(0, len(clients)):
             #receive message from client
             sentence = clients[i][0].recv(2048).decode('utf-8')
             print("Player ", i, " entered: ", sentence)
-            sum+= int(sentence)
+            sum += int(sentence)
             print("Current Number: ", sum)
             
             '''code for close/shutdown'''
             
-            if sum == ranNum or sum == ranNum +1:
-                print("THE WINNER IS PLAYER ",i)
+            if sum == ran_num or sum == ran_num +1:
+                print("THE WINNER IS PLAYER ", i)
                 clients[i][0].send(b'YOU WIN')
-                broadcast(b'YOU LOSE',clients[i][0],clients)
+                broadcast(b'YOU LOSE', clients[i][0], clients)
                 for c in clients:
                     c[0].close()
                 exit()
             else:
-                curNumberMsg = b'Current Number: ' + str(sum).encode('utf-8')
+                curr_num = str(sum).encode('utf-8')
                 for c in clients:
-                    c[0].send(curNumberMsg)
-
-
-
-
-#check if the message is "/close", if so, then close the connection
-#            if sentence == "/close":
-#                print("Client ",i," disconnected!")
-#                clients[i][0].send(b'Good Bye!')
-#                msg = b"Other client has disconnected. Chat ended"
-#                broadcast(msg,clients[i][0])
-#                clients[i][0].close()
-#                remove(clients[i][0])
-#
-#                #check if the message is "/shutdown", if so, shut down the server
-#            elif sentence == "/shutdown":
-#                print("Server is shutting down!")
-#                for c in clients:
-#                    c[0].send(b'Server is shutting down!')
-#
-#                    c[0].close()
-#                exit()
-#            else:
-#                #send received message to other client
-
-
+                    c[0].send(curr_num)
