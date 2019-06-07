@@ -61,7 +61,7 @@ while 1:
         # Announce new connection
         welcomeMessage = "Player " + str(len(CLIENTS)-1) +" connected to server EASY"
         print(welcomeMessage)
-    RAN_NUMBER = random.randint(7, 10)
+    RAN_NUMBER = random.randint(10, 30)
     print("Generated number: ", RAN_NUMBER)
     SUM = 0
     GEN_NUMBER = str(RAN_NUMBER).encode('utf-8')
