@@ -4,21 +4,16 @@
     Author: Tai Doan, Hung Nguyen, Huyen Nguyen
 '''
 
-from socket import *
-import re
+import socket
 import sys
 import random
-from time import gmtime, strftime
-from datetime import datetime
 
-easySocket = socket(AF_INET, SOCK_STREAM) #TCP
-easySocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1) #make port reusable
+EASY_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #TCP
+EASY_SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #make port reusable
 
 
-# takes the first argument from command prompt as IP address
-IP_address = str(sys.argv[1])
-# takes second argument from command prompt as port number
-Port1 = 43500       #Port for Easy mode
+IP_ADDRESS = str(sys.argv[1])
+PORT_1 = 43500 # Port for Easy mode
 
 
 TWO_CLIENTS = 2
@@ -26,13 +21,15 @@ TWO_CLIENTS = 2
  binds the server to an entered IP address and at the specified port number.
  The client must be aware of these parameters
  '''
-#Connection socket for EASY mode
-easySocket.bind((IP_address, int(Port1)))
-easySocket.listen(1)
+# Connection socket for EASY mode
+EASY_SOCKET.bind((IP_ADDRESS, int(PORT_1)))
+EASY_SOCKET.listen(1)
 
+# back-end testing message
+# purpose: make sure the server is ready
 print('Server EASY is ready to accept client')
 
-clients = []
+CLIENTS = []
 
 #accept up to 2 connections from clients, which
 #must connect before we can move on
@@ -46,48 +43,50 @@ def broadcast(message, connection, receiver):
             c[0].send(message)
 
 # remove() takes 1 parameters: the connection
-# The function removes the object from the list
+# purpose: The function removes the object from the list
 def remove(connection):
-    if connection in clients:
-        clients.remove(connection)
+    if connection in CLIENTS:
+        CLIENTS.remove(connection)
 
+#GAME LOOP
+# purpose: to keep running the game until one of the two players wins
 while 1:
     for i in range(0, int(TWO_CLIENTS)):
-        #accept the connection from client
-        connectionSocket,addr = easySocket.accept()
-        #add new clients to the list
-        clients.append((connectionSocket,addr))
-        #send welcome message to client
+        # Accept the connection from client
+        connectionSocket, addr = EASY_SOCKET.accept()
+        # Add new clients to the list
+        CLIENTS.append((connectionSocket, addr))
+        # Send welcome message to client
         connectionSocket.send(b'Welcome to the play room!\n')
-        #Announce new connection
-        welcomeMessage = "Player " + str(len(clients)-1) +" connected to server EASY"
+        # Announce new connection
+        welcomeMessage = "Player " + str(len(CLIENTS)-1) +" connected to server EASY"
         print(welcomeMessage)
-    
-    ran_num = random.randint(10, 30)
-    print("Generated number: ", ran_num)
-    sum = 0
-    gen_num = str(ran_num).encode('utf-8')
-    for c in clients:
-        c[0].send(gen_num)
- 
+    RAN_NUMBER = random.randint(7, 10)
+    print("Generated number: ", RAN_NUMBER)
+    SUM = 0
+    GEN_NUMBER = str(RAN_NUMBER).encode('utf-8')
+    for c in CLIENTS:
+        c[0].send(GEN_NUMBER)
     while 1:
-        for i in range(0, len(clients)):
-            #receive message from client
-            sentence = clients[i][0].recv(2048).decode('utf-8')
+        for i in range(0, len(CLIENTS)):
+            # Receive message from client - confirmed on server side that
+            # clients are connected.
+            sentence = CLIENTS[i][0].recv(2048).decode('utf-8')
             print("Player ", i, " entered: ", sentence)
-            sum += int(sentence)
-            print("Current Number: ", sum)
-            
-            '''code for close/shutdown'''
-            
-            if sum == ran_num or sum == ran_num +1:
+            SUM += int(sentence)
+            print("Current Number: ", SUM)
+            if SUM == RAN_NUMBER or SUM == RAN_NUMBER +1:
                 print("THE WINNER IS PLAYER ", i)
-                clients[i][0].send(b'YOU WIN')
-                broadcast(b'YOU LOSE', clients[i][0], clients)
-                for c in clients:
+                CLIENTS[i][0].send(b'YOU WIN')
+
+                if i + 1 == len(CLIENTS):
+                    CLIENTS[0][0].send(b'YOU LOSE')
+                else:
+                    CLIENTS[i - 1][0].send(b'YOU LOSE')
+                for c in CLIENTS:
                     c[0].close()
                 exit()
             else:
-                curr_num = str(sum).encode('utf-8')
-                for c in clients:
+                curr_num = str(SUM).encode('utf-8')
+                for c in CLIENTS:
                     c[0].send(curr_num)
